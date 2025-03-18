@@ -7,6 +7,15 @@
 
 using namespace std;
 
+// https://www.geeksforgeeks.org/program-calculate-distance-two-points/
+double euclideanDist(vector<double>& a, vector<double>& b, set<int>& features) {
+    double sum = 0.0;
+    for (int feature : features) {
+        sum += pow(a[feature] - b[feature], 2);
+    }
+    return sqrt(sum);
+}
+
 int main() {
     int choice{};
     string fileName = "";
