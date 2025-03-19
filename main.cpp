@@ -152,7 +152,16 @@ void backwardSelection(vector<vector<double>>& data) {
 
         if (featureToRemove != -1) {
             curr_features.erase(featureToRemove);
-            cout << "\nFeature {" << featureToRemove << "} removed, accuracy is now " << best_so_far_Acc * 100 << "%" << endl << endl;
+            cout << "\nFeature set {";
+
+            bool first = true; 
+            for (auto f : curr_features) {
+                if (!first) cout << ", ";
+                cout << f;
+                first = false;
+            }
+
+            cout << "} was best, accuracy is " << best_so_far_Acc * 100 << "%" << endl << endl;
         }
 
         if (best_so_far_Acc < bestAccuracy) {
