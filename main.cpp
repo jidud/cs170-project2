@@ -106,8 +106,11 @@ void forwardSelection(vector<vector<double>>& data) {
     }
 
     cout << "Finished search!! The best feature subset is {";
+    bool first = true;
     for (auto feature : best) {
+        if(!first) cout << ", ";
         cout << feature;
+        first = false;
     }
     cout << "} which has an accuracy of " << bestAccuracy * 100 << "%" << endl << endl;
 }
