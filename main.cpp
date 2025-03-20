@@ -1,26 +1,29 @@
+
 // g++ -std=c++17 main.cpp -o main
 
 #include<iostream>
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <cmath>
+#include <algorithm>
+
 
 using namespace std;
 
-// https://www.geeksforgeeks.org/program-calculate-distance-two-points/
-double euclideanDist(vector<double>& a, vector<double>& b, set<int>& features) {
+double euclideanDist(vector<double>& a, vector<double>& b, vector<int>& feature) {
     double sum = 0.0;
-    for (int feature : features) {
-        sum += pow(a[feature] - b[feature], 2);
+    for (int features : feature) {
+        sum += pow(a[features] - b[features], 2);
     }
     return sqrt(sum);
 }
 
 // cross validation
-double accuracy(vector<vector<double>>& data, set<int>& feature, int next) {
-    set<int> selectedFeatures = feature;
+double accuracy(vector<vector<double>>& data, vector<int>& feature, int next) {
+    vector<int> selectedFeatures = feature;
     if (next != -1) {
-        selectedFeatures.insert(next);
+        selectedFeatures.push_back(next);
     }
 
     int correctlyClassified = 0;
@@ -50,24 +53,19 @@ double accuracy(vector<vector<double>>& data, set<int>& feature, int next) {
 }
 
 void forwardSelection(vector<vector<double>>& data) {
-    set<int> curr_features = {}; 
-    set<int> best = {}; 
-    double bestAccuracy = -1;
-
-    bestAccuracy = accuracy(data, best, -1);
+    vector<int> curr_features = {}; 
+    vector<int> best = {}; 
+    double bestAccuracy = accuracy(data, best, -1);
 
     cout << "Running nearest neighbor with no feature, using 'leave-one-out' evaluation, I get a default rate accuracy of " << bestAccuracy * 100 << "%" << endl << endl;
-
-    bestAccuracy = -1;
-
     cout << "Beginning search." << endl << endl;
 
     for (int i = 1; i < (data[0].size()); ++i) {
         int featureToAdd = -1;
-        double best_so_far_Acc = -1;
+        double best_so_far_Acc = 0;
 
         for (int j = 1; j < (data[0].size()); ++j) {  
-            if (curr_features.find(j) == curr_features.end()) {  
+            if (find(curr_features.begin(), curr_features.end(), j) == curr_features.end()) {  
                 double acc = accuracy(data, curr_features, j); 
                 cout << "    Using feature(s) {";
                 for (auto feature : curr_features) {
@@ -82,7 +80,7 @@ void forwardSelection(vector<vector<double>>& data) {
         }
 
         if (featureToAdd != -1) {
-            curr_features.insert(featureToAdd);
+            curr_features.push_back(featureToAdd);
             cout << "\nFeature set {";
 
             // add commas in between
@@ -92,7 +90,6 @@ void forwardSelection(vector<vector<double>>& data) {
                 cout << f;
                 first = false;
             }
-
             cout << "} was best, accuracy is " << best_so_far_Acc * 100 << "%" << endl << endl;
         }
 
@@ -104,7 +101,6 @@ void forwardSelection(vector<vector<double>>& data) {
             best = curr_features;
         }
     }
-
     cout << "Finished search!! The best feature subset is {";
     bool first = true;
     for (auto feature : best) {
@@ -116,12 +112,12 @@ void forwardSelection(vector<vector<double>>& data) {
 }
 
 void backwardSelection(vector<vector<double>>& data) { 
-    set<int> curr_features = {};  
-    set<int> best = {}; 
+    vector<int> curr_features = {};  
+    vector<int> best = {}; 
     int numFeatures = data[0].size() - 1;
     
     for (int i = 1; i <= numFeatures; ++i) {
-        curr_features.insert(i);
+        curr_features.push_back(i);
     }
 
     double bestAccuracy = accuracy(data, curr_features, -1);
@@ -133,8 +129,8 @@ void backwardSelection(vector<vector<double>>& data) {
         double best_so_far_Acc = -1;
 
         for (int feature : curr_features) {
-            set<int> temp = curr_features;
-            temp.erase(feature);  // removing feature
+            vector<int> temp = curr_features;
+            temp.erase(find(temp.begin(), temp.end(), feature));  // removing feature
 
             double acc = accuracy(data, temp, -1);
 
@@ -154,7 +150,7 @@ void backwardSelection(vector<vector<double>>& data) {
         }
 
         if (featureToRemove != -1) {
-            curr_features.erase(featureToRemove);
+            curr_features.erase(find(curr_features.begin(), curr_features.end(), featureToRemove));
             cout << "\nFeature set {";
 
             bool first = true; 
@@ -163,7 +159,6 @@ void backwardSelection(vector<vector<double>>& data) {
                 cout << f;
                 first = false;
             }
-
             cout << "} was best, accuracy is " << best_so_far_Acc * 100 << "%" << endl << endl;
         }
 
@@ -175,9 +170,8 @@ void backwardSelection(vector<vector<double>>& data) {
             best = curr_features;
         }
     }
-
-  cout << "Finished search!! The best feature subset is {";
-  bool first = true;
+    cout << "Finished search!! The best feature subset is {";
+    bool first = true;
     for (auto feature : best) {
         if(!first) cout << ", ";
         cout << feature;
@@ -189,7 +183,7 @@ void backwardSelection(vector<vector<double>>& data) {
 int main() {
     int choice{};
     string fileName = "";
-
+   
     cout << "Welcome to Jenny Lee's Feature Selection Algorithm." << endl;
     cout << "Type in the name of the file to test: ";
     cin >> fileName;
@@ -199,7 +193,7 @@ int main() {
     cin >> choice;
     cout << endl;
 
-    // open file
+    // check file name
     ifstream file(fileName);
     if (!file.is_open()) {
         cout << "Error opening the file!" << endl;
@@ -221,13 +215,13 @@ int main() {
     }
     file.close();
 
-    cout << "This dataset has " << data[0].size() - 1 << " features (not including the class attribute), with " << data.size() << " instances." << endl << endl;
+    cout << "This dataset has " << data[0].size() - 1 << " feature (not including the class attribute), with " << data.size() << " instances." << endl << endl;
 
     if (choice == 1) {
-        // Forward Selection
+        forwardSelection(data);    
     } 
     else if (choice == 2) {
-        // Backwards Elimination
+        backwardSelection(data);
     }
 
     return 0;
