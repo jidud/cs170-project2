@@ -5,10 +5,11 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include <chrono>
+#include <ctime> 
 
 using namespace std;
 
-// https://www.geeksforgeeks.org/program-calculate-distance-two-points/
 double euclideanDist(vector<double>& a, vector<double>& b, vector<int>& feature) {
     double sum = 0.0;
     for (int features : feature) {
@@ -31,6 +32,7 @@ double accuracy(vector<vector<double>>& data, vector<int>& feature, int next) {
         vector<double> obj_to_classify = data[i];  
         int obj_label = obj_to_classify[0];
 
+        // faster than numeric_limits<double>::infinity()
         double nearest_neighbor_distance = INFINITY;
         int nearest_neighbor_label = -1;
 
@@ -129,7 +131,6 @@ void backwardSelection(vector<vector<double>>& data) {
         for (int feature : curr_features) {
             vector<int> temp = curr_features;
             temp.erase(find(temp.begin(), temp.end(), feature));  // removing feature
-
             double acc = accuracy(data, temp, -1);
 
             cout << "    Using feature(s) {";
@@ -181,6 +182,7 @@ void backwardSelection(vector<vector<double>>& data) {
 int main() {
     int choice{};
     string fileName = "";
+
    
     cout << "Welcome to Jenny Lee's Feature Selection Algorithm." << endl;
     cout << "Type in the name of the file to test: ";
@@ -191,7 +193,7 @@ int main() {
     cin >> choice;
     cout << endl;
 
-    // check file name
+    // open file
     ifstream file(fileName);
     if (!file.is_open()) {
         cout << "Error opening the file!" << endl;
@@ -213,14 +215,24 @@ int main() {
     }
     file.close();
 
-    cout << "This dataset has " << data[0].size() - 1 << " feature (not including the class attribute), with " << data.size() << " instances." << endl << endl;
+    cout << "This dataset has " << data[0].size() - 1 << " features (not including the class attribute), with " << data.size() << " instances." << endl << endl;
 
     if (choice == 1) {
-        forwardSelection(data);    
+        // auto start = std::chrono::system_clock::now();
+        forwardSelection(data);
+        // auto end = std::chrono::system_clock::now();
+        // chrono::duration<double> elapsed_seconds = end-start;
+ 
+        // cout << "elapsed time: " << elapsed_seconds.count() << "s" << endl;
+        
     } 
     else if (choice == 2) {
+        // auto start = std::chrono::system_clock::now();
         backwardSelection(data);
+        // auto end = std::chrono::system_clock::now();
+        // chrono::duration<double> elapsed_seconds = end-start;
+ 
+        // cout << "elapsed time: " << elapsed_seconds.count() << "s" << endl;
     }
-
     return 0;
 }
