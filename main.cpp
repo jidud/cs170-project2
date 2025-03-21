@@ -1,5 +1,4 @@
 // g++ -std=c++17 main.cpp -o main
-
 #include<iostream>
 #include <fstream>
 #include <sstream>
@@ -7,9 +6,9 @@
 #include <cmath>
 #include <algorithm>
 
-
 using namespace std;
 
+// https://www.geeksforgeeks.org/program-calculate-distance-two-points/
 double euclideanDist(vector<double>& a, vector<double>& b, vector<int>& feature) {
     double sum = 0.0;
     for (int features : feature) {
