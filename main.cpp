@@ -1,4 +1,6 @@
 // g++ -std=c++17 main.cpp -o main
+// add -Ofast when compiling large dataset
+
 #include<iostream>
 #include <fstream>
 #include <sstream>
@@ -7,6 +9,7 @@
 #include <algorithm>
 #include <chrono>
 #include <ctime> 
+#include <iomanip> 
 
 using namespace std;
 
@@ -218,21 +221,22 @@ int main() {
     cout << "This dataset has " << data[0].size() - 1 << " features (not including the class attribute), with " << data.size() << " instances." << endl << endl;
 
     if (choice == 1) {
-        // auto start = std::chrono::system_clock::now();
+        auto start = chrono::system_clock::now();
         forwardSelection(data);
-        // auto end = std::chrono::system_clock::now();
-        // chrono::duration<double> elapsed_seconds = end-start;
- 
-        // cout << "elapsed time: " << elapsed_seconds.count() << "s" << endl;
+        auto end = chrono::system_clock::now();
+        chrono::duration<double> elapsed_seconds = end-start;
+        cout << fixed << setprecision(1);
+        cout << "elapsed time: " << elapsed_seconds.count() << "s" << endl;
         
     } 
     else if (choice == 2) {
-        // auto start = std::chrono::system_clock::now();
+        auto start = chrono::system_clock::now();
         backwardSelection(data);
-        // auto end = std::chrono::system_clock::now();
-        // chrono::duration<double> elapsed_seconds = end-start;
- 
-        // cout << "elapsed time: " << elapsed_seconds.count() << "s" << endl;
+        auto end = chrono::system_clock::now();
+        chrono::duration<double> elapsed_seconds = end-start;
+        cout << fixed << setprecision(1);
+        cout << "elapsed time: " << elapsed_seconds.count() << "s" << endl;
     }
+
     return 0;
 }
